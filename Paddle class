@@ -1,0 +1,76 @@
+package Pong;
+
+import java.awt.event.KeyEvent;
+
+public class Paddle extends GameObject{
+    
+    private int UP = KeyEvent.VK_UP;
+    private int DOWN = KeyEvent.VK_DOWN;
+    private int LEFT = KeyEvent.VK_LEFT;
+    private int RIGHT = KeyEvent.VK_RIGHT;
+    private int paddleSpeed = 7;
+    private int score = 0;
+    
+    public Paddle(int x, int y, int dx, int dy){
+        super(x,y,dx,dy);
+    }
+    
+    public Paddle(){
+        super();
+    }
+    
+    public int getScore(){
+        return score;
+    }
+    
+    public void setScore(int score){
+        this.score = score;
+    }
+    
+    public void keyBindUp(int e){
+        UP = e;
+    }
+    
+    public void keyBindDown(int e){
+        DOWN = e;
+    }
+    
+    public void keyBindLeft(int e){
+        LEFT = e;
+    }
+    
+    public void keyBindRight(int e){
+        RIGHT = e;
+    }
+    
+    public void keyPress(KeyEvent e){
+        if (e.getKeyCode() == UP){
+            setDy(-paddleSpeed);
+        }
+        if (e.getKeyCode() == DOWN){
+            setDy(paddleSpeed);
+        }
+        if (e.getKeyCode() == LEFT){
+            setDx(-paddleSpeed);
+        }
+        if (e.getKeyCode() == RIGHT){
+            setDx(paddleSpeed);
+        }
+    }
+    
+    public void keyRelease(KeyEvent e){
+        if (e.getKeyCode() == UP){
+            setDy(0);
+        }
+        if (e.getKeyCode() == DOWN){
+            setDy(0);
+        }
+        if (e.getKeyCode() == LEFT){
+            setDx(0);
+        }
+        if (e.getKeyCode() == RIGHT){
+            setDx(0);
+        }
+    }
+    
+}
