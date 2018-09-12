@@ -1,0 +1,241 @@
+
+//Main Class
+
+package Pong;
+import java.awt.Graphics;
+import java.awt.Color;
+import javax.swing.JPanel;
+import java.awt.event.*;
+import java.awt.Font;
+import javax.swing.JFrame;
+
+@SuppressWarnings("serial")
+public class Pong extends JPanel{
+
+    Ball ball;
+    Paddle p1;
+    Paddle p2;
+    boolean spacePress = false;
+    boolean pause = false;
+    
+    public Pong(){
+        this.p1 = new Paddle(0,150,0,0);
+        this.p2 = new Paddle(0,150,0,0);
+        this.ball = new Ball(325,225,4,4);
+        KeyListener listener = new MyKeyListener();
+        addKeyListener(listener);
+        setFocusable(true);
+        setControls();
+    }
+    
+    @Override
+    public void paintComponent(Graphics g){
+        super.paintComponent(g);
+        setBackground(Color.BLACK);
+        
+        int rgb = Color.HSBtoRGB((float)(ball.getX()*255.0/getWidth()/200.0), 1, 1);
+        int red = (rgb>>16)&0xFF;
+        int green = (rgb>>8)&0xFF;
+        int blue = rgb&0xFF;
+
+        //p1
+        g.setColor(Color.WHITE);
+        g.fillRect(getWidth()-20, (int)p1.getY(), 20, 100);
+        //p2
+        g.setColor(Color.WHITE);
+        g.fillRect(0, (int)p2.getY(), 20, 100);
+        //ball
+        g.setColor(new Color(red,green,blue));
+        g.fillOval((int)ball.getX(),(int)ball.getY(),50,50);
+        //score
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Bit5x5", Font.PLAIN, 50));
+        g.drawString(String.format("%d",p2.getScore()), 200, 50);
+        g.drawString(String.format("%d",p1.getScore()), 450, 50);
+        
+        if(p1.getScore() >= 7){
+            g.drawString("YOU WIN", 400, 200);
+            //g.drawString("YOU LOSE", 100, 200);
+            g.setFont(new Font("Bit5x5", Font.PLAIN, 20));
+            g.drawString("Press Space to start over", 220, 400);
+            g.drawString("Or Press M to go to the menu", 220, 425);
+            pause = true;
+            if(spacePress == true){
+                p1.setScore(0);
+                p2.setScore(0);
+            }
+            
+        }
+        
+        if(p2.getScore() >= 7){
+            g.drawString("YOU WIN", 100, 200);
+            //g.drawString("YOU LOSE", 400, 200);
+            g.setFont(new Font("Bit5x5", Font.PLAIN, 20));
+            g.drawString("Press Space to start over", 220, 400);
+            g.drawString("Or Press M to go to the menu", 220, 425);
+            pause = true;
+            if(spacePress == true){
+                p1.setScore(0);
+                p2.setScore(0);
+            }
+        }
+    }
+    
+    public void drawPause(Graphics g){
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Bit5x5", Font.PLAIN, 20));
+        g.drawString("Paused",325,400);
+    }
+    
+    public void update(){
+        //ball collision
+        //left paddle collision
+        if(ball.getX()<20 && ball.getX()>0 && (ball.getY()>p2.getY()-50 && ball.getY() < p2.getY() +100)){
+            ball.collideX(1.03);
+        }
+        
+        if(ball.getX()<15 && ball.getX()>-50 && ((ball.getY()+50 > p2.getY()) && (ball.getY() < p2.getY()+100 ))){
+            ball.collideY();
+        }
+        //right paddle collision
+        if(ball.getX()>getWidth()-20 -50 && ball.getX()<getWidth()-20 && (ball.getY()>p1.getY()-50 && ball.getY() < p1.getY() +100)){
+            ball.collideX(1.03);
+        }
+        
+        if(ball.getX()<getWidth() && ball.getX()>getWidth()-20-45 && ((ball.getY()+50 > p1.getY()) && (ball.getY() < p1.getY()+100 ))){
+            ball.collideY();
+            System.out.print("bounce");
+        }
+        //top and bottom collision
+        if(ball.getY() < 0 || ball.getY()>getHeight()-50){
+            ball.collideY();
+        }
+        
+        //reset
+        if(ball.getX()< -50){
+            ball.setX(350);
+            ball.setY(50);
+            ball.setDx(4);
+            ball.setDy(4);
+            p1.setScore(p1.getScore()+1);
+        }
+        
+        if(ball.getX()>getWidth()){
+            ball.setX(350);
+            ball.setY(50);
+            ball.setDx(-4);
+            ball.setDy(4);
+            p2.setScore(p2.getScore()+1);
+        }
+        
+        ball.setX(ball.getX() + ball.getDx());
+        ball.setY(ball.getY() + ball.getDy());
+        
+        
+        //move p1
+        if(p1.getY() < 0 - 1){
+            p1.setY(0);
+        }
+        
+        if(p1.getY() > getHeight()-100 +1){
+            p1.setY(getHeight()-100);
+        }
+        
+        p1.setX(p1.getX() + p1.getDx());
+        p1.setY(p1.getY() + p1.getDy());
+        
+        //move p2
+        if(p2.getY() < 0 - 1){
+            p2.setY(0);
+        }
+        
+        if(p2.getY() > getHeight()-100 + 1){
+            p2.setY(getHeight()-100);
+        }
+        
+        p2.setX(p2.getX() + p2.getDx());
+        p2.setY(p2.getY() + p2.getDy());
+        
+        repaint();
+    }
+    
+    //Key Events
+    public class MyKeyListener implements KeyListener {
+        @Override
+        public void keyTyped(KeyEvent e) {  
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            //player 1
+            p1.keyPress(e);
+            //player 2
+            p2.keyPress(e);
+            
+            if(e.getKeyCode() == KeyEvent.VK_SPACE){
+                spacePress = true;
+                pause = false;
+                p1.setScore(0);
+                p2.setScore(0);
+            }
+            
+            if(e.getKeyCode() == KeyEvent.VK_P){
+                pause = !pause;
+                drawPause(getGraphics());
+            }
+            
+            if(e.getKeyCode() == KeyEvent.VK_Q){
+                quit();
+            }
+            
+            if(e.getKeyCode() == KeyEvent.VK_M){
+                goToMenu();
+            }
+            
+            System.out.println("keyPressed="+KeyEvent.getKeyText(e.getKeyCode()));
+        }
+
+        private void quit()
+        {
+            System.exit(0);
+        }
+        
+        private void goToMenu(){
+            MainMenu menu = new MainMenu();
+            //JFrame menu = new JFrame("PONG");
+
+            //menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            menu.setSize(700, 500);
+            menu.setVisible(true);
+            //setVisible(false);
+            //repaint();
+        }
+        
+        @Override
+        public void keyReleased(KeyEvent e) {
+            //player 1
+            p1.keyRelease(e);
+            //player 2
+            p2.keyRelease(e);
+            
+            if(e.getKeyCode() == KeyEvent.VK_SPACE){
+                spacePress = false;
+            }
+            
+            System.out.println("keyReleased="+KeyEvent.getKeyText(e.getKeyCode()));
+        }
+    }
+    
+    public void setControls(){
+        //player 1
+        p1.keyBindUp(KeyEvent.VK_UP);
+        p1.keyBindDown(KeyEvent.VK_DOWN);
+        p1.keyBindLeft(KeyEvent.VK_LEFT);
+        p1.keyBindRight(KeyEvent.VK_RIGHT);
+        //player 2
+        p2.keyBindUp(KeyEvent.VK_W);
+        p2.keyBindDown(KeyEvent.VK_S);
+        p2.keyBindLeft(KeyEvent.VK_A);
+        p2.keyBindRight(KeyEvent.VK_D);
+    }
+}
