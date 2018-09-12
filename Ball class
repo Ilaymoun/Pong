@@ -1,0 +1,26 @@
+package Pong;
+
+public class Ball extends GameObject{
+    
+    public Ball(int x, int y, int dx, int dy){
+        super(x,y,dx,dy);
+    }
+    
+    public Ball(){
+        super();
+    }
+    
+    public void collideX(){
+        super.setDx(super.getDx() * -1.0);
+    }
+    public void collideX(double i){
+        super.setDx(super.getDx() * -1.0 * i);
+        super.setDy(super.getDy() * 1.0 * i);
+    }
+    
+    public void collideY(){
+        super.setDy(super.getDy() * -1.0);
+    }
+    
+    
+}
