@@ -1,0 +1,37 @@
+package myfirstgamev2;
+
+import java.awt.Graphics;
+import java.awt.Color;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.Timer;
+import java.awt.event.ActionEvent;
+import java.awt.event.*;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.util.concurrent.TimeUnit;
+import javax.swing.JButton;
+
+public class Controls extends JPanel
+{
+    public Controls()
+    {
+       
+    }
+    
+    @Override
+    public void paintComponent(Graphics g){
+        super.paintComponent(g);
+        setBackground(Color.BLACK);
+        
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Bit5x5", Font.PLAIN, 30)); 
+        g.drawString("Controls:", 280, 100);
+        g.drawString("Player 1: Up, Down", 130, 175);
+        g.drawString("Player 2: W, S", 130, 225);
+        g.drawString("Restart: Spacebar", 130, 275);
+        g.drawString("Pause: P", 130, 325);
+        g.drawString("Quit: Q", 130, 375);
+    }
+}
